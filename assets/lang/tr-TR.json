@@ -1,0 +1,14 @@
+{
+  "general": {
+    "settings": "Ayarlar",
+    "unknown": "Bilinmiyor",
+    "error": "Hata",
+    "error_occurred": "Hata oluştu"
+  },
+  "home": {
+    "cartography_tools": "Haritacılık Araçları",
+    "calculations": "Hesaplamalar",
+    "deflection_calculation": "Sehim Hesabı",
+    "used_to_calculate_deflection": "Sehimi hesaplamak için kullanılır"
+  }
+}
