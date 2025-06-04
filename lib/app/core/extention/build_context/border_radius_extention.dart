@@ -30,4 +30,8 @@ final class BorderRadiusExtention {
   BorderRadius get high {
     return BorderRadius.circular(_width * 0.08);
   }
+
+  BorderRadius dynamicRadius(double value) {
+    return BorderRadius.circular(_width * value);
+  }
 }

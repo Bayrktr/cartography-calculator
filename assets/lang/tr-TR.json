@@ -3,12 +3,25 @@
     "settings": "Ayarlar",
     "unknown": "Bilinmiyor",
     "error": "Hata",
-    "error_occurred": "Hata oluştu"
+    "error_occurred": "Hata oluştu",
+    "inputValue": "Değer girin"
   },
   "home": {
     "cartography_tools": "Haritacılık Araçları",
     "calculations": "Hesaplamalar",
     "deflection_calculation": "Sehim Hesabı",
     "used_to_calculate_deflection": "Sehimi hesaplamak için kullanılır"
+  },
+  "units": {
+    "unit": "Birim",
+    "meter": "Metre",
+    "degree": "Derece"
+  },
+  "deflection": {
+    "fTitle": "Sehim",
+    "tTitle": "Konsol",
+    "aTitle": "Ara Mesafe",
+    "bTitle": "Makara Açısı",
+    "xTitle": "Torba Açısı"
   }
 }

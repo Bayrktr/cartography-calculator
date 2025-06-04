@@ -1,27 +1,36 @@
-import 'package:calculator/app/product/model/calculations/veriable_types.dart';
+import 'package:calculator/app/product/model/calculations/base_formula_model.dart';
 import 'package:equatable/equatable.dart';
 
 class FormulaModel with EquatableMixin {
   FormulaModel({
     required this.title,
     this.message,
-    required this.veriables,
-    required this.calculations,
+    this.formulaType,
     this.gptEndpoint,
   });
 
   final String title;
   final String? message;
-  final List<VeriableTypes<dynamic>> veriables;
-  final double Function(List<VeriableTypes<dynamic>> inputs) calculations;
+  final BaseFormulaModel? formulaType;
   final String? gptEndpoint;
 
   @override
   List<Object?> get props => [
         title,
         message,
-        veriables,
-        calculations,
         gptEndpoint,
       ];
+
+  FormulaModel copyWith({
+    String? title,
+    String? message,
+    BaseFormulaModel? formulaType,
+    String? gptEndpoint,
+  }) =>
+      FormulaModel(
+        title: title ?? this.title,
+        message: message ?? this.message,
+        gptEndpoint: gptEndpoint ?? this.gptEndpoint,
+        formulaType: formulaType ?? this.formulaType,
+      );
 }

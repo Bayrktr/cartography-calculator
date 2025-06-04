@@ -40,6 +40,9 @@ abstract class BaseCubit<T, K, M, S extends BaseState<T, K, M>>
 
   BaseErrorDataModel<K>? get errorData => errorState?.data;
 
+  T? get initialModel => initialData?.data;
+
+
   @override
   void emit(S state) {
     if (!isClosed) super.emit(state);

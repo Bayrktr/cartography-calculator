@@ -1,12 +1,16 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:calculator/app/core/extention/build_context/build_context_extension.dart';
 import 'package:calculator/app/core/extention/string/string_extention.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/all_tools/view/component/tool_item/model/tool_item_model.dart';
 import 'package:calculator/app/product/component/image/custom_image.dart';
 import 'package:calculator/app/product/component/text/locale_text.dart';
 import 'package:calculator/app/product/enum/svg_enum.dart';
+import 'package:calculator/app/product/model/calculations/base_formula_model.dart';
+import 'package:calculator/app/product/model/calculations/deflection/deflection_veriables_model.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
-import 'package:calculator/app/product/model/calculations/veriable_types.dart';
+import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
+import 'package:calculator/app/product/navigation/app_router.dart';
 import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 

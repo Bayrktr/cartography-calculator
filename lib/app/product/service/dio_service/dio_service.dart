@@ -24,8 +24,12 @@ final class DioService {
     required T model,
     Object? data,
     bool addToken = false,
+    String? token,
   }) async {
-    addIntercepter(addToken: addToken);
+    addIntercepter(
+      addToken: addToken,
+      token: token,
+    );
     _dio.httpClientAdapter = IOHttpClientAdapter(
       validateCertificate: (X509Certificate? cert, String host, int port) {
         return true;
@@ -82,8 +86,12 @@ final class DioService {
     required T model,
     Object? data,
     bool addToken = false,
+    String? token,
   }) async {
-    addIntercepter(addToken: addToken);
+    addIntercepter(
+      addToken: addToken,
+      token: token,
+    );
     _dio.httpClientAdapter = IOHttpClientAdapter(
       validateCertificate: (X509Certificate? cert, String host, int port) {
         return true;

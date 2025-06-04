@@ -8,19 +8,26 @@ mixin _AllToolsViewMixin on StatelessWidget {
       iconPath: SvgEnum.map.path,
       formula: FormulaModel(
         title: LocaleKeys.home_deflection_calculation.lang.tr,
-        veriables: [
-          DoubleVeriable(veriableName: 'F', value: 100),
-          DoubleVeriable(veriableName: 'T', value: 120),
-        ],
-        calculations: (List<VeriableTypes<dynamic>> veriables) {
-          final f = (veriables.firstWhere((v) => v.veriableName == 'F').value
-                  as DoubleVeriable)
-              .value;
-          final t = (veriables.firstWhere((v) => v.veriableName == 'T').value
-                  as DoubleVeriable)
-              .value;
-          return f + t;
-        },
+        formulaType: DeflectionFormula(
+          veriables: DeflectionVeriablesModel(
+            F: DistanceVeriable(
+              veriableName: 'F',
+              title: LocaleKeys.deflection_fTitle.lang.tr,
+            ),
+            T: DistanceVeriable(
+              veriableName: 'T',
+              title: LocaleKeys.deflection_tTitle.lang.tr,
+            ),
+            A: DistanceVeriable(
+              veriableName: 'A',
+              title: LocaleKeys.deflection_aTitle.lang.tr,
+            ),
+            b: DegreeVeriable(
+              veriableName: 'b',
+              title: LocaleKeys.deflection_bTitle.lang.tr,
+            ),
+          ),
+        ),
       ),
     ),
   ];

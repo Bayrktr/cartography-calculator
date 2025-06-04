@@ -11,10 +11,13 @@ part of 'app_router.dart';
 
 /// generated route for
 /// [AllToolsView]
-class AllToolsRoute extends PageRouteInfo<void> {
-  const AllToolsRoute({List<PageRouteInfo>? children})
-      : super(
+class AllToolsRoute extends PageRouteInfo<AllToolsRouteArgs> {
+  AllToolsRoute({
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
           AllToolsRoute.name,
+          args: AllToolsRouteArgs(key: key),
           initialChildren: children,
         );
 
@@ -23,17 +26,37 @@ class AllToolsRoute extends PageRouteInfo<void> {
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return  AllToolsView();
+      final args = data.argsAs<AllToolsRouteArgs>(
+          orElse: () => const AllToolsRouteArgs());
+      return AllToolsView(key: args.key);
     },
   );
 }
 
+class AllToolsRouteArgs {
+  const AllToolsRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'AllToolsRouteArgs{key: $key}';
+  }
+}
+
 /// generated route for
 /// [CalculatePageView]
-class CalculatePageRoute extends PageRouteInfo<void> {
-  const CalculatePageRoute({List<PageRouteInfo>? children})
-      : super(
+class CalculatePageRoute extends PageRouteInfo<CalculatePageRouteArgs> {
+  CalculatePageRoute({
+    Key? key,
+    FormulaModel? formula,
+    List<PageRouteInfo>? children,
+  }) : super(
           CalculatePageRoute.name,
+          args: CalculatePageRouteArgs(
+            key: key,
+            formula: formula,
+          ),
           initialChildren: children,
         );
 
@@ -42,9 +65,30 @@ class CalculatePageRoute extends PageRouteInfo<void> {
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return  CalculatePageView();
+      final args = data.argsAs<CalculatePageRouteArgs>(
+          orElse: () => const CalculatePageRouteArgs());
+      return CalculatePageView(
+        key: args.key,
+        formula: args.formula,
+      );
     },
   );
+}
+
+class CalculatePageRouteArgs {
+  const CalculatePageRouteArgs({
+    this.key,
+    this.formula,
+  });
+
+  final Key? key;
+
+  final FormulaModel? formula;
+
+  @override
+  String toString() {
+    return 'CalculatePageRouteArgs{key: $key, formula: $formula}';
+  }
 }
 
 /// generated route for

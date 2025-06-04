@@ -7,6 +7,7 @@ import 'package:calculator/app/features/home/view/features/tool_selection/view/f
 import 'package:calculator/app/features/home/view/features/tool_selection/view/tool_selection_view.dart';
 import 'package:calculator/app/features/home/view/home_view.dart';
 import 'package:calculator/app/features/splash/view/splash_view.dart';
+import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/navigation/route_path.dart';
 import 'package:flutter/material.dart';
 

@@ -8,7 +8,13 @@ class _ToolItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: (){},
+      onTap: () {
+        context.router.push(
+          CalculatePageRoute(
+            formula: item.formula,
+          ),
+        );
+      },
       leading: Container(
         decoration: BoxDecoration(
           color: context.theme.bottomNavigationBarTheme.backgroundColor,

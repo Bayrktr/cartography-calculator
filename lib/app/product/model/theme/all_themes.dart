@@ -36,8 +36,11 @@ class CustomLightTheme extends AllThemes {
           backgroundColor: CustomColors.bottombarBackground.getColor,
         ),
         scaffoldBackgroundColor: CustomColors.scaffoldBackground.getColor,
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           color: Colors.transparent,
+          iconTheme: IconThemeData(
+            color: CustomColors.white.getColor,
+          ),
         ),
         progressIndicatorTheme: ProgressIndicatorThemeData(
           color: CustomColors.bodySmall.getColor,
@@ -45,6 +48,21 @@ class CustomLightTheme extends AllThemes {
         iconTheme: IconThemeData(
           color: CustomColors.white.getColor,
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: CustomColors.bottombarBackground.getColor,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: CustomColors.white.getColor,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: CustomColors.white.getColor,
+            ),
+          ),
+        ),
+        primaryColor: CustomColors.white.getColor,
       );
 
   @override
