@@ -1,5 +1,6 @@
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/model/calculations/formula_response_model.dart';
+import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
 import 'package:equatable/equatable.dart';
 
 class CalculatePageInitialModel with EquatableMixin {

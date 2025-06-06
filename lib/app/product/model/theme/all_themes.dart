@@ -14,6 +14,9 @@ sealed class AllThemes with HiveModelMixin {
 class CustomLightTheme extends AllThemes {
   ThemeData get theme => ThemeData.light().copyWith(
         textTheme: TextTheme(
+          bodyLarge: const TextStyle(
+            color: Colors.black,
+          ),
           bodyMedium: TextStyle(
             color: CustomColors.bodySmall.getColor,
           ),
@@ -63,6 +66,12 @@ class CustomLightTheme extends AllThemes {
           ),
         ),
         primaryColor: CustomColors.white.getColor,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.yellow,
+            foregroundColor: Colors.black,
+          ),
+        ),
       );
 
   @override

@@ -68,11 +68,13 @@ class _DegreeTextField extends StatelessWidget {
               try {
                 final parsedValue = double.parse(value);
                 print('value: $parsedValue');
-                context.read<CalculatePageController>().updateVeriable(
-                  veriable.copyWith(
-                    value: parsedValue,
-                  ),
+                final newVeriable = veriable.copyWith(
+                  value: parsedValue,
                 );
+                print(newVeriable.value);
+                context.read<CalculatePageController>().updateVeriable(
+                      newVeriable,
+                    );
               } catch (e) {}
             },
           ),

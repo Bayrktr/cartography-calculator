@@ -8,6 +8,7 @@ abstract class  LocaleKeys {
   static const general_error = 'general.error';
   static const general_error_occurred = 'general.error_occurred';
   static const general_inputValue = 'general.inputValue';
+  static const general_calculate = 'general.calculate';
   static const general = 'general';
   static const home_cartography_tools = 'home.cartography_tools';
   static const home_calculations = 'home.calculations';

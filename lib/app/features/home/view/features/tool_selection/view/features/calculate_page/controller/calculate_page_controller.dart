@@ -9,8 +9,11 @@ import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
 import 'package:calculator/app/product/state/base/cubit/base_state.dart';
 import 'package:calculator/app/product/state/base/cubit/model/initial/base_initial_data_model.dart';
 
-class CalculatePageController extends BaseCubit<CalculatePageInitialModel,
-    CalculatePageErrorModel, Object, BaseState<CalculatePageInitialModel, CalculatePageErrorModel, Object>> {
+class CalculatePageController extends BaseCubit<
+    CalculatePageInitialModel,
+    CalculatePageErrorModel,
+    Object,
+    BaseState<CalculatePageInitialModel, CalculatePageErrorModel, Object>> {
   CalculatePageController({required this.formula}) : super(BaseState.loading());
 
   final FormulaModel formula;
@@ -61,10 +64,9 @@ class CalculatePageController extends BaseCubit<CalculatePageInitialModel,
   }
 
   void updateVeriable(VeriableTypes<dynamic> veriable) {
-
     final veriables = formula.formulaType!.veriables!.veriableList; // fixme
     for (final x in veriables) {
-      if (x!.veriableName == veriable!.veriableName) {
+      if (x!.veriableName == veriable.veriableName) {
         emit(
           BaseState.initial(
             data: initialData!.copyWith(
@@ -81,9 +83,13 @@ class CalculatePageController extends BaseCubit<CalculatePageInitialModel,
             ),
           ),
         );
-        print('Guncellendi');
-        print(veriable.value);
+        print(initialModel!.formula!.formulaType!.veriables!.veriableList[3]);
       }
     }
+  }
+
+  void updateResult() {
+    formula.formulaType!.calculate();
+    print(formula.formulaType?.result?.value);
   }
 }

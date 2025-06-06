@@ -2,10 +2,14 @@ import 'package:auto_route/annotations.dart';
 import 'package:calculator/app/core/extention/build_context/build_context_extension.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_controller.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/calculate_input_widget.dart';
+import 'package:calculator/app/product/component/text/locale_text.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/state/base/cubit/widget/base_cubit_widget.dart';
+import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+part 'component/calculate_button.dart';
 
 @RoutePage()
 class CalculatePageView extends StatelessWidget {
@@ -19,6 +23,10 @@ class CalculatePageView extends StatelessWidget {
     final controller = CalculatePageController(
       formula: formula!,
     );
+
+    final veriables = formula?.formulaType?.veriables?.veriableList ?? [];
+
+    final length = veriables.length;
 
     return BlocProvider(
       create: (_) => controller,
@@ -34,12 +42,13 @@ class CalculatePageView extends StatelessWidget {
           initial: (state) {
             return ListView.builder(
               physics: const ClampingScrollPhysics(),
-              itemCount:
-                  formula?.formulaType?.veriables?.veriableList.length ?? 0,
+              itemCount: length + 1,
               itemBuilder: (BuildContext context, int index) {
-                final veriable =
-                    formula?.formulaType?.veriables?.veriableList[index];
-                print(formula?.formulaType?.veriables?.veriableList ?? 0);
+                if (index == length) {
+                  return _CalculateButton();
+                }
+                final veriable = veriables[index];
+
                 if (veriable == null) return Container();
 
                 return CalculateInputWidget(

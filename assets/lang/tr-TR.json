@@ -4,7 +4,8 @@
     "unknown": "Bilinmiyor",
     "error": "Hata",
     "error_occurred": "Hata oluştu",
-    "inputValue": "Değer girin"
+    "inputValue": "Değer girin",
+    "calculate": "Hesapla"
   },
   "home": {
     "cartography_tools": "Haritacılık Araçları",
