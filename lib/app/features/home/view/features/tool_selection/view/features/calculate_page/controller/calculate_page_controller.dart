@@ -1,10 +1,10 @@
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_repository.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_error_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_initial_model.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_show_modal_bottom_sheet_model.dart';
 import 'package:calculator/app/product/exception/formula/formula_exception.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
-import 'package:calculator/app/product/service/model/base_model.dart';
 import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
 import 'package:calculator/app/product/state/base/cubit/base_state.dart';
 import 'package:calculator/app/product/state/base/cubit/model/initial/base_initial_data_model.dart';
@@ -22,7 +22,6 @@ class CalculatePageController extends BaseCubit<
 
   @override
   Future<void> onInit() async {
-    print('sa');
     emit(
       BaseState.initial(
         data: BaseInitialDataModel<CalculatePageInitialModel>(
@@ -32,7 +31,6 @@ class CalculatePageController extends BaseCubit<
         ),
       ),
     );
-    print('guncellendi');
   }
 
   Future<void> getGptResult(String? voiceMessage) async {
@@ -60,6 +58,9 @@ class CalculatePageController extends BaseCubit<
         ),
       );
     } on FormulaException catch (e) {
+      switch (e) {
+        case SomethingMissingException():
+      }
     } catch (e) {}
   }
 
@@ -83,13 +84,33 @@ class CalculatePageController extends BaseCubit<
             ),
           ),
         );
-        print(initialModel!.formula!.formulaType!.veriables!.veriableList[3]);
       }
     }
   }
 
   void updateResult() {
-    formula.formulaType!.calculate();
-    print(formula.formulaType?.result?.value);
+    initialModel!.formula!.formulaType!.calculate();
+    emit(
+      BaseState.initial(
+        data: initialData!.copyWith(
+          data: initialModel!.copyWith(
+            modalSheet: const CalculatePageResultShowModalBottomSheet(),
+          ),
+        ),
+      ),
+    );
+    resetModalSheet();
+  }
+
+  void resetModalSheet() {
+    emit(
+      BaseState.initial(
+        data: initialData!.copyWith(
+          data: initialModel!.copyWith(
+            modalSheet: const CalculatePageNoneShowModalBottomSheet(),
+          ),
+        ),
+      ),
+    );
   }
 }

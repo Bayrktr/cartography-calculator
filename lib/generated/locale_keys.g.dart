@@ -15,6 +15,9 @@ abstract class  LocaleKeys {
   static const home_deflection_calculation = 'home.deflection_calculation';
   static const home_used_to_calculate_deflection = 'home.used_to_calculate_deflection';
   static const home = 'home';
+  static const calculation_calculation_result = 'calculation.calculation_result';
+  static const calculation_dismiss = 'calculation.dismiss';
+  static const calculation = 'calculation';
   static const units_unit = 'units.unit';
   static const units_meter = 'units.meter';
   static const units_degree = 'units.degree';

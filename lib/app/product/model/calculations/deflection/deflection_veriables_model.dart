@@ -38,19 +38,16 @@ class DeflectionVeriablesModel
         veriableName: 'T',
         value: (json['T'] as num?)?.toDouble(),
         title: LocaleKeys.deflection_tTitle.lang.tr,
-
       ),
       A: DistanceVeriable(
         veriableName: 'A',
         value: (json['A'] as num?)?.toDouble(),
         title: LocaleKeys.deflection_aTitle.lang.tr,
-
       ),
       b: DegreeVeriable(
         veriableName: 'b',
         value: (json['b'] as num?)?.toDouble(),
         title: LocaleKeys.deflection_bTitle.lang.tr,
-
       ),
     );
   }

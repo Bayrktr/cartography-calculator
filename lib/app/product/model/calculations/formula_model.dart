@@ -19,6 +19,7 @@ class FormulaModel with EquatableMixin {
         title,
         message,
         gptEndpoint,
+        formulaType,
       ];
 
   FormulaModel copyWith({

@@ -1,12 +1,13 @@
-part of 'calculate_input_widget.dart';
+part of 'input_widget/calculate_input_widget.dart';
 
 class _DistanceTextField extends StatelessWidget {
   _DistanceTextField({
     super.key,
     required this.veriable,
+    required this.controller,
   });
 
-  final controller = TextEditingController();
+  final TextEditingController controller;
 
   final VeriableTypes<dynamic> veriable;
 

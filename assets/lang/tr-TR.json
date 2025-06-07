@@ -13,6 +13,10 @@
     "deflection_calculation": "Sehim Hesabı",
     "used_to_calculate_deflection": "Sehimi hesaplamak için kullanılır"
   },
+  "calculation": {
+    "calculation_result": "Hesaplama Sonucu",
+    "dismiss": "Kapat"
+  },
   "units": {
     "unit": "Birim",
     "meter": "Metre",

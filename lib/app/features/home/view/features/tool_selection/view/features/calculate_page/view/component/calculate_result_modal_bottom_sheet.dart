@@ -1,6 +1,8 @@
 import 'package:calculator/app/core/extention/build_context/build_context_extension.dart';
 import 'package:calculator/app/product/component/text/locale_text.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_model.dart';
+import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
+import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 
 class CalculateResultModalBottomSheet extends StatelessWidget {
@@ -9,7 +11,7 @@ class CalculateResultModalBottomSheet extends StatelessWidget {
     required this.veriable,
   });
 
-  final VeriableModel veriable;
+  final VeriableTypes<dynamic> veriable;
 
   @override
   Widget build(BuildContext context) {
@@ -20,27 +22,25 @@ class CalculateResultModalBottomSheet extends StatelessWidget {
         children: [
           // Drag handle
           Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
+            width: context.sized.widthHighValue,
+            height: context.sized.dynamicHeight(0.005),
+            margin: EdgeInsets.only(
+              bottom: context.sized.heightNormalValue,
+            ),
             decoration: BoxDecoration(
               color: Colors.grey.shade700,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: context.borderRadius.low,
             ),
           ),
-          const Text(
-            'Calculation Result',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
           LocaleText(
-            textAlign: TextAlign.center,
-            textStyle: context.theme.textTheme.bodyMedium,
-            text: '',
+            text: LocaleKeys.calculation_calculation_result,
+            textStyle: context.theme.textTheme.titleMedium,
+          ),
+          SizedBox(
+            height: context.sized.heightNormalValue,
+          ),
+          Text(
+            '${veriable.value} ${veriable.unit}',
           ),
           Padding(
             padding: context.padding.low,
@@ -50,20 +50,22 @@ class CalculateResultModalBottomSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
-                foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: context.borderRadius.normal,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.symmetric(
+                  vertical: context.sized.heightNormalValue,
+                ),
               ),
-              child: const Text(
-                'Dismiss',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: LocaleText(
+                text: LocaleKeys.calculation_dismiss,
+                textStyle: context.theme.textTheme.bodyLarge,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(
+            height: context.sized.heightNormalValue,
+          ),
         ],
       ),
     );

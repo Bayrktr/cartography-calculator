@@ -35,14 +35,9 @@ class DeflectionFormula extends BaseFormulaModel with EquatableMixin {
 
   @override
   void calculate() {
-    print('aa');
     for (final (x as VeriableTypes) in veriables?.veriableList ?? []) {
-      print(x?.value);
-     // if (x.value == null) throw SomethingMissingException();
-
+      if (x.value == null) throw SomethingMissingException();
     }
-
-    print('burda');
 
     final TValue = veriables!.T!.value!.toInt();
     final FValue = veriables!.F!.value!.toInt();
@@ -56,9 +51,6 @@ class DeflectionFormula extends BaseFormulaModel with EquatableMixin {
     final tanPart = tan((bValue - 100) * pi / 180);
     final total = (innerFraction / AValue) + tanPart;
     final alfa = atan(total) * 180 / pi + 100;
-
-    print(alfa);
-    print('alfa');
 
     _result = _result.copyWith(value: alfa);
   }
