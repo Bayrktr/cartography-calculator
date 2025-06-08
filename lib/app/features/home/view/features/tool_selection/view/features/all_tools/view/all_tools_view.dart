@@ -1,4 +1,3 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:calculator/app/core/extention/build_context/build_context_extension.dart';
 import 'package:calculator/app/core/extention/string/string_extention.dart';
@@ -40,6 +39,7 @@ class AllToolsView extends StatelessWidget with _AllToolsViewMixin {
             Expanded(
               flex: 30,
               child: ListView.builder(
+                physics: const ClampingScrollPhysics(),
                 itemCount: _items.length,
                 itemBuilder: (BuildContext context, int index) {
                   final item = _items[index];

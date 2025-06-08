@@ -11,7 +11,6 @@ import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/navigation/route_path.dart';
 import 'package:flutter/material.dart';
 
-import 'import.dart';
 
 part 'app_router.gr.dart';
 

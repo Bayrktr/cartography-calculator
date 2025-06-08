@@ -14,7 +14,9 @@ class _DegreeTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: context.padding.normal,
+      padding: EdgeInsets.symmetric(
+        vertical: context.sized.heightNormalValue,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -31,6 +33,7 @@ class _DegreeTextField extends StatelessWidget {
           TextField(
             keyboardType: TextInputType.number,
             cursorColor: context.theme.primaryColor,
+            style: context.theme.textTheme.titleSmall,
             controller: controller,
             inputFormatters: [
               //FilteringTextInputFormatter.allow(RegExpConstant.numberFormatter),

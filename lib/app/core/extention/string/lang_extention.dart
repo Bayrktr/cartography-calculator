@@ -7,4 +7,8 @@ final class LangExtension {
 
   /// locale translate
   String get tr => _string.tr();
+
+  String trWithArg({required List<String> args}) => _string.tr(
+        args: args,
+      );
 }

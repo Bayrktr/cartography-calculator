@@ -56,6 +56,17 @@ dependencies:
   #Injection
   get_it: ^8.0.0
 
+
+  permission_handler: ^11.3.0
+  path_provider: ^2.1.2
+
+  #Audio
+  audio_waveforms: ^1.3.0
+  record: ^5.0.0
+  speech_to_text: ^7.0.0
+
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -74,5 +85,6 @@ flutter:
     - assets/images/icon/
     - assets/images/picture/
     - assets/lang/
+    - .env
 
   uses-material-design: true

@@ -28,5 +28,8 @@
     "aTitle": "Ara Mesafe",
     "bTitle": "Makara Açısı",
     "xTitle": "Torba Açısı"
+  },
+  "exceptions": {
+    "the_following_data_missing": "Aşağıdaki veriler eksik: {}"
   }
 }

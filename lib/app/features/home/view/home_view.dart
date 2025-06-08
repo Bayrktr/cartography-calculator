@@ -19,20 +19,23 @@ class HomeView extends BaseView with HomeViewMixin {
   Widget build(BuildContext context) {
     return AutoTabsRouter.tabBar(
       builder: (context, child, tabController) {
+        final currentRouteName = context.topRoute.name;
+        final showBottomBar = currentRouteName != CalculatePageRoute.name;
+
         return Scaffold(
           body: child,
-          bottomNavigationBar: BottomNavigationBar(
+          bottomNavigationBar: showBottomBar
+              ? BottomNavigationBar(
             currentIndex: context.tabsRouter.activeIndex,
             onTap: (index) {
               context.tabsRouter.setActiveIndex(index);
             },
             items: List.generate(
               items.length,
-              (index) {
+                  (index) {
                 final item = items[index];
                 final activeIndex = context.tabsRouter.activeIndex;
                 final isActive = activeIndex == index;
-                print(context.tabsRouter.activeIndex);
                 return BottomNavigationBarItem(
                   label: '',
                   icon: CustomImage(
@@ -41,17 +44,18 @@ class HomeView extends BaseView with HomeViewMixin {
                     assetPath: item.iconPath,
                     radius: context.radius.low,
                     color: isActive
-                        ? context
-                            .theme.bottomNavigationBarTheme.selectedItemColor
+                        ? context.theme.bottomNavigationBarTheme.selectedItemColor
                         : context.theme.bottomNavigationBarTheme.unselectedItemColor,
                   ),
                 );
               },
             ),
-          ),
+          )
+              : null,
         );
       },
       routes: routes,
     );
   }
+
 }

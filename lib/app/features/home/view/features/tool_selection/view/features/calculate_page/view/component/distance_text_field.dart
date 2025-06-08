@@ -14,7 +14,9 @@ class _DistanceTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: context.padding.normal,
+      padding: EdgeInsets.symmetric(
+        vertical: context.sized.heightNormalValue,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,6 +34,7 @@ class _DistanceTextField extends StatelessWidget {
             keyboardType: TextInputType.number,
             cursorColor: context.theme.primaryColor,
             controller: controller,
+            style: context.theme.textTheme.titleSmall,
             inputFormatters: [
               //FilteringTextInputFormatter.allow(RegExpConstant.numberFormatter),
             ],

@@ -7,13 +7,16 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
 final class DioService {
-  DioService() {
+  DioService({this.header}) {
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
+        headers: header,
       ),
     );
   }
+
+  final Map<String, dynamic>? header;
 
   final String baseUrl = ServiceSettings.baseUrl;
 
@@ -87,10 +90,14 @@ final class DioService {
     Object? data,
     bool addToken = false,
     String? token,
+    bool addApiKeyHeader = false,
+    String? apiKey,
   }) async {
     addIntercepter(
       addToken: addToken,
       token: token,
+      addApiKeyHeader: addApiKeyHeader,
+      apiKey: apiKey,
     );
     _dio.httpClientAdapter = IOHttpClientAdapter(
       validateCertificate: (X509Certificate? cert, String host, int port) {
@@ -108,6 +115,7 @@ final class DioService {
       final response = await _dio.post<dynamic>(
         path,
         data: data,
+
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         final parseModel = _parseModel<T>(
@@ -261,20 +269,25 @@ final class DioService {
     }
   }
 
-  void addIntercepter({bool addToken = false, String? token}) {
-    // fixme düzenle
+  void addIntercepter({
+    bool addToken = false,
+    String? token,
+    bool addApiKeyHeader = false,
+    String? apiKey,
+  }) {
+    //_dio.interceptors.clear();
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          if (addToken) {
-            //final token = await CacheManager.instance.getToken();
-            if (token != null && token.isNotEmpty) {
-              options.headers['Authorization'] = 'Bearer $token';
-              return handler.next(options);
-            } else {
-              return handler.next(options);
-            }
+          if (addToken && token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
           }
+
+          if (addApiKeyHeader && apiKey != null && apiKey.isNotEmpty) {
+            options.headers['X-API-KEY'] = apiKey;
+          }
+
           return handler.next(options);
         },
         onError: (error, handler) => handler.next(error),

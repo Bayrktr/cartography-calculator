@@ -4,6 +4,7 @@ import 'package:calculator/app/product/manager/getIt/getIt_manager.dart';
 import 'package:calculator/app/product/model/theme/all_themes.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final class AppInit {
   const AppInit._();

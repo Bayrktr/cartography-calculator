@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+    <string>Sesinizi yazıya çevirmek için izin gerekiyor</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Mikrofon gerekli</string>
 </dict>
 </plist>

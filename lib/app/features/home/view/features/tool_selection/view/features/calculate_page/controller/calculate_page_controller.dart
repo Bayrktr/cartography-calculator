@@ -38,7 +38,7 @@ class CalculatePageController extends BaseCubit<
       final formulaType = initialData?.data?.formula?.formulaType;
 
       if (formulaType == null || voiceMessage == null) {
-        throw SomethingMissingException(message: 'Gerekli veriler eksik.');
+        throw Exception();
       }
 
       final data = {'text': voiceMessage};
@@ -60,8 +60,11 @@ class CalculatePageController extends BaseCubit<
     } on FormulaException catch (e) {
       switch (e) {
         case SomethingMissingException():
+        case NoneFormulaException():
+        case NoneKnownFormulaException():
       }
     } catch (e) {}
+    resetModalSheet();
   }
 
   void updateVeriable(VeriableTypes<dynamic> veriable) {
@@ -89,17 +92,46 @@ class CalculatePageController extends BaseCubit<
   }
 
   void updateResult() {
-    initialModel!.formula!.formulaType!.calculate();
-    emit(
-      BaseState.initial(
-        data: initialData!.copyWith(
-          data: initialModel!.copyWith(
-            modalSheet: const CalculatePageResultShowModalBottomSheet(),
+    try {
+      initialModel!.formula!.formulaType!.calculate();
+
+      emit(
+        BaseState.initial(
+          data: initialData!.copyWith(
+            data: initialModel!.copyWith(
+              modalSheet: const CalculatePageResultShowModalBottomSheet(),
+            ),
           ),
         ),
-      ),
-    );
-    resetModalSheet();
+      );
+      resetModalSheet();
+    } on FormulaException catch (e) {
+      switch (e) {
+        case SomethingMissingException():
+          print('çalıstı');
+          emit(
+            BaseState.initial(
+              data: initialData!.copyWith(
+                data: initialModel!.copyWith(
+                  formulaException: e,
+                ),
+              ),
+            ),
+          );
+        case NoneFormulaException():
+        case NoneKnownFormulaException():
+          emit(
+            BaseState.initial(
+              data: initialData!.copyWith(
+                data: initialModel!.copyWith(
+                  formulaException: e,
+                ),
+              ),
+            ),
+          );
+      }
+    } catch (e) {}
+    resetFormulaException();
   }
 
   void resetModalSheet() {
@@ -108,6 +140,18 @@ class CalculatePageController extends BaseCubit<
         data: initialData!.copyWith(
           data: initialModel!.copyWith(
             modalSheet: const CalculatePageNoneShowModalBottomSheet(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void resetFormulaException() {
+    emit(
+      BaseState.initial(
+        data: initialData!.copyWith(
+          data: initialModel!.copyWith(
+            formulaException: const NoneFormulaException(),
           ),
         ),
       ),

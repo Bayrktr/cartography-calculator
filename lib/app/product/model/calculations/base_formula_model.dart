@@ -35,8 +35,16 @@ class DeflectionFormula extends BaseFormulaModel with EquatableMixin {
 
   @override
   void calculate() {
-    for (final (x as VeriableTypes) in veriables?.veriableList ?? []) {
-      if (x.value == null) throw SomethingMissingException();
+    final missing = <VeriableTypes<dynamic>?>[];
+
+    for (final VeriableTypes<dynamic>? x in veriables?.veriableList ?? []) {
+      if (x?.value == null) {
+        missing.add(x);
+      }
+    }
+
+    if (missing.isNotEmpty) {
+      throw SomethingMissingException(missingValues: missing);
     }
 
     final TValue = veriables!.T!.value!.toInt();
