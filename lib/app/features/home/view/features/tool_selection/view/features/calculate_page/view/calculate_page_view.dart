@@ -24,10 +24,6 @@ class CalculatePageView extends StatelessWidget {
       formula: formula!,
     );
 
-    final veriables = formula?.formulaType?.veriables?.veriableList ?? [];
-
-    final length = veriables.length;
-
     return BlocProvider(
       create: (_) => controller,
       child: Scaffold(
@@ -40,6 +36,9 @@ class CalculatePageView extends StatelessWidget {
         body: BaseCubitWidget(
           bloc: controller,
           initial: (state) {
+            final veriables = state.model?.formula?.formulaType?.veriables?.veriableList ?? [];
+            final length = veriables.length;
+
             return ListView.builder(
               physics: const ClampingScrollPhysics(),
               itemCount: length + 1,
@@ -47,6 +46,7 @@ class CalculatePageView extends StatelessWidget {
                 if (index == length) {
                   return _CalculateButton();
                 }
+
                 final veriable = veriables[index];
 
                 if (veriable == null) return Container();

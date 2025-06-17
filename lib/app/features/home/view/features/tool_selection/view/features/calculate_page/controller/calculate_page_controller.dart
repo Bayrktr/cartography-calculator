@@ -89,7 +89,21 @@ class CalculatePageController extends BaseCubit<
   }
 
   void updateResult() {
-    formula.formulaType!.calculate();
-    print(formula.formulaType?.result?.value);
+    final formulaType = initialModel?.formula?.formulaType;
+    formulaType?.calculate();
+
+    emit(
+      BaseState.initial(
+        data: initialData!.copyWith(
+          data: initialModel!.copyWith(
+            formula: initialModel!.formula!.copyWith(
+              formulaType: formulaType,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    print(formulaType?.result?.value);
   }
 }
