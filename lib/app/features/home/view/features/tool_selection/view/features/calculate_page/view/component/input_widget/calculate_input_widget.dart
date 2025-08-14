@@ -1,11 +1,15 @@
 import 'package:calculator/app/core/extention/build_context/build_context_extension.dart';
 import 'package:calculator/app/core/extention/string/string_extention.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_controller.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_gpt_response_status.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_initial_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/input_widget/calculate_input_widget_controller.dart';
 import 'package:calculator/app/product/constant/regexp/regexp_constant.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
+import 'package:calculator/app/product/state/base/cubit/base_state.dart';
 import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part '../distance_text_field.dart';
@@ -13,27 +17,54 @@ part '../distance_text_field.dart';
 part '../degree_text_field.dart';
 
 class CalculateInputWidget extends StatelessWidget {
-  CalculateInputWidget({
+  const CalculateInputWidget({
     super.key,
     required this.veriable,
+    required this.controller,
   });
 
   final VeriableTypes<dynamic> veriable;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    final controller = CalculateInputWidgetController();
-    return BlocProvider(
-      create: (_) => controller,
-      child: Builder(
-        builder: (context) => _getFormField(
-          context.read<CalculateInputWidgetController>().controller,
-        ),
-      ),
+    return BlocListener<CalculatePageController,
+        BaseState<CalculatePageInitialModel, Object, Object>>(
+      listener: (context, state) {
+        switch (state) {
+          case BaseInitialModel<CalculatePageInitialModel, Object, Object>():
+            final status = state.model?.gptResponseStatus;
+
+            switch (status) {
+              case CalculatePageGptResponseDone():
+                final variables = status.response?.variables;
+                final matchedValue = variables?[veriable.veriableName];
+
+                if (matchedValue != null) {
+                  context.read<CalculatePageController>().updateVeriableValue(
+                        veriable.veriableName,
+                        matchedValue,
+                      );
+                  controller.text = matchedValue.toString();
+                }
+                break;
+
+              case CalculatePageGptResponseError():
+              case CalculatePageGptResponseOnProgress():
+              case CalculatePageGptResponseNone():
+              case null:
+                break;
+            }
+
+          case BaseLoadingModel<CalculatePageInitialModel, Object, Object>():
+          case BaseErrorModel<CalculatePageInitialModel, Object, Object>():
+        }
+      },
+      child: _getFormField(context),
     );
   }
 
-  Widget _getFormField(TextEditingController controller) {
+  Widget _getFormField(BuildContext context) {
     switch (veriable) {
       case DistanceVeriable():
         return _DistanceTextField(

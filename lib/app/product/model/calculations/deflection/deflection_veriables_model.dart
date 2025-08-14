@@ -96,4 +96,40 @@ class DeflectionVeriablesModel
         return this;
     }
   }
+
+  @override
+  BaseVeriablesModel updateVariableValue(
+    String? name,
+    double? value,
+  ) {
+    switch (name) {
+      case 'F':
+        return copyWith(
+          F: F!.copyWith(
+            value: value,
+          ),
+        );
+      case 'T':
+        return copyWith(
+          T: T!.copyWith(
+            value: value,
+          ),
+        );
+      case 'A':
+        return copyWith(
+          A: A!.copyWith(
+            value: value,
+          ),
+        );
+      case 'b':
+        return copyWith(
+          b: b!.copyWith(
+            value: value,
+          ),
+        );
+      default:
+        print('bulunamadı');
+        return this;
+    }
+  }
 }

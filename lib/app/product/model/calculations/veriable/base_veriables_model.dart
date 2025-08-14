@@ -4,4 +4,6 @@ abstract class BaseVeriablesModel{
   List<VeriableTypes<dynamic>?> get veriableList;
 
   BaseVeriablesModel  updateVeriable(VeriableTypes<dynamic> veriable);
+
+  BaseVeriablesModel updateVariableValue(String? name, double? value);
 }

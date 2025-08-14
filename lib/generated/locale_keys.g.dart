@@ -29,6 +29,8 @@ abstract class  LocaleKeys {
   static const deflection_xTitle = 'deflection.xTitle';
   static const deflection = 'deflection';
   static const exceptions_the_following_data_missing = 'exceptions.the_following_data_missing';
+  static const exceptions_error_with_unknown_cause = 'exceptions.error_with_unknown_cause';
+  static const exceptions_missing_veriable = 'exceptions.missing_veriable';
   static const exceptions = 'exceptions';
 
 }

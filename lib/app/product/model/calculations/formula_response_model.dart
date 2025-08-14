@@ -4,29 +4,39 @@ import 'package:equatable/equatable.dart';
 class FormulaResponseModel extends BaseModel<FormulaResponseModel>
     with EquatableMixin {
   FormulaResponseModel({
+    this.status,
     this.message,
-    this.veriables,
+    this.variables,
     this.result,
     this.errors,
   });
 
+  final int? status;
   final String? message;
-  final Map<String, double>? veriables;
+  final Map<String, double>? variables;
   final double? result;
-  final List<dynamic>? errors;
+  final List<Map<String, dynamic>?>? errors;
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [
+        status,
+        message,
+        variables,
+        result,
+        errors,
+      ];
 
   FormulaResponseModel copyWith({
+    int? status,
     String? message,
-    Map<String, double>? veriables,
+    Map<String, double>? variables,
     double? result,
-    List<dynamic>? errors,
+    List<Map<String, dynamic>?>? errors,
   }) {
     return FormulaResponseModel(
+      status: status ?? this.status,
       message: message ?? this.message,
-      veriables: veriables ?? this.veriables,
+      variables: variables ?? this.variables,
       result: result ?? this.result,
       errors: errors ?? this.errors,
     );
@@ -35,15 +45,26 @@ class FormulaResponseModel extends BaseModel<FormulaResponseModel>
   @override
   FormulaResponseModel fromJson(Map<String, dynamic> json) {
     return FormulaResponseModel(
+      status: json['status'] as int?,
       message: json['message'] as String?,
-      veriables: json['veriables'] as Map<String, double>,
-      result: json['result'] as double?,
-      errors: json['errors'] as List<dynamic>?,
+      variables: (json['variables'] as Map<String, dynamic>?)?.map(
+        (key, value) => MapEntry(key, (value as num).toDouble()),
+      ),
+      result: (json['result'] as num?)?.toDouble(),
+      errors: (json['errors'] as List<dynamic>?)
+          ?.map((e) => e as Map<String, dynamic>?)
+          .toList(),
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      'status': status,
+      'message': message,
+      'variables': variables,
+      'result': result,
+      'errors': errors,
+    };
   }
 }

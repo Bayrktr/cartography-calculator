@@ -1,23 +1,24 @@
+import 'package:flutter/material.dart';
 import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
 import 'package:calculator/app/product/state/base/cubit/base_state.dart';
-import 'package:flutter/cupertino.dart';
 
-class CalculateInputWidgetController extends BaseCubit<Object, Object, Object,
-    BaseState<Object, Object, Object>> {
-  CalculateInputWidgetController()
-      : super(
-          BaseState.loading(),
-        );
+class CalculateInputWidgetController extends BaseCubit<Object, Object, Object, BaseState<Object, Object, Object>> {
+  CalculateInputWidgetController() : super(BaseState.initial());
 
-  final TextEditingController _controller = TextEditingController();
+  final Map<String, TextEditingController> _controllers = {};
 
-  TextEditingController get controller => _controller;
+  TextEditingController controllerFor(String key) {
+    return _controllers.putIfAbsent(key, () => TextEditingController());
+  }
+
+  void updateController(String key, String? value) {
+    if (value == null) return;
+    final controller = controllerFor(key);
+    if (controller.text != value) {
+      controller.text = value;
+    }
+  }
 
   @override
   Future<void> onInit() async {}
-
-  void updateController(String? value) {
-    if (value == null) return;
-    _controller.text = value;
-  }
 }

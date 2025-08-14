@@ -17,5 +17,6 @@ final class GetItManager {
       ..registerSingleton<ThemeOperation>(
         ThemeOperation(),
       );
+
   }
 }

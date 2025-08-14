@@ -9,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+
+
   await dotenv.load();
 
   await AppInit.mainInit();
@@ -39,6 +41,7 @@ class MyApp extends StatelessWidget {
         builder: (context) {
           final allThemes = context.read<ThemeCubit>().state.selectedTheme;
           return MaterialApp.router(
+
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,

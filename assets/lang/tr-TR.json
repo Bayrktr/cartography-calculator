@@ -30,6 +30,8 @@
     "xTitle": "Torba Açısı"
   },
   "exceptions": {
-    "the_following_data_missing": "Aşağıdaki veriler eksik: {}"
+    "the_following_data_missing": "Aşağıdaki veriler eksik: {}",
+    "error_with_unknown_cause": "Nedeni bilinmeyen hata",
+    "missing_veriable": "Eksik verilen değişken"
   }
 }

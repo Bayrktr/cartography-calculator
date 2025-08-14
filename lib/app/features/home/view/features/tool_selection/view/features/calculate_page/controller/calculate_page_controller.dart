@@ -1,13 +1,19 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_repository.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_error_model.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_gpt_response_status.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_initial_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_show_modal_bottom_sheet_model.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/exception/gpt_response_exceptions.dart';
 import 'package:calculator/app/product/exception/formula/formula_exception.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
 import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
 import 'package:calculator/app/product/state/base/cubit/base_state.dart';
 import 'package:calculator/app/product/state/base/cubit/model/initial/base_initial_data_model.dart';
+import 'package:dio/dio.dart';
 
 class CalculatePageController extends BaseCubit<
     CalculatePageInitialModel,
@@ -33,7 +39,7 @@ class CalculatePageController extends BaseCubit<
     );
   }
 
-  Future<void> getGptResult(String? voiceMessage) async {
+  Future<void> getGptResult(File? voiceMessage) async {
     try {
       final formulaType = initialData?.data?.formula?.formulaType;
 
@@ -41,22 +47,77 @@ class CalculatePageController extends BaseCubit<
         throw Exception();
       }
 
-      final data = {'text': voiceMessage};
-
-      final response = await _repository.getGptResult(
-        formulaType,
-        data,
+      final formData = FormData.fromMap(
+        {
+          'file': await MultipartFile.fromFile(
+            voiceMessage.path,
+            filename: voiceMessage.path.split('/').last,
+          ),
+        },
       );
 
       emit(
         BaseState.initial(
           data: initialData!.copyWith(
             data: initialModel!.copyWith(
-              response: response.data,
+              gptResponseStatus: const CalculatePageGptResponseOnProgress(),
             ),
           ),
         ),
       );
+
+      final response = await _repository.getGptResult(
+        formulaType,
+        formData,
+      );
+
+      final status = response.data?.status;
+
+      resetGptResponse();
+
+      if (status != 200) {
+        emit(
+          BaseState.initial(
+            data: initialData!.copyWith(
+              data: initialModel!.copyWith(
+                gptResponseStatus: CalculatePageGptResponseError(
+                  exception: GptResponseExceptions.fromType(
+                    status,
+                    response.data?.errors ?? [],
+                    response.data?.message,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        print('veriables');
+        print(response.data!.variables);
+        emit(
+          BaseState.initial(
+            data: initialData!.copyWith(
+              data: initialModel!.copyWith(
+                response: response.data,
+                gptResponseStatus: CalculatePageGptResponseDone(
+                  response: response.data,
+                ),
+              ),
+            ),
+          ),
+        );
+        emit(
+          BaseState.initial(
+            data: initialData!.copyWith(
+              data: initialModel!.copyWith(
+                modalSheet: const CalculatePageResultShowModalBottomSheet(),
+              ),
+            ),
+          ),
+        );
+        resetModalSheet();
+      }
+      resetGptResponse();
     } on FormulaException catch (e) {
       switch (e) {
         case SomethingMissingException():
@@ -71,6 +132,8 @@ class CalculatePageController extends BaseCubit<
     final veriables = formula.formulaType!.veriables!.veriableList; // fixme
     for (final x in veriables) {
       if (x!.veriableName == veriable.veriableName) {
+        print('veriable guncelleniyo');
+
         emit(
           BaseState.initial(
             data: initialData!.copyWith(
@@ -87,7 +150,30 @@ class CalculatePageController extends BaseCubit<
             ),
           ),
         );
+        for(var x in initialModel!.formula!.formulaType!.veriables!.veriableList){
+          print(x!.value);
+        }
       }
+    }
+  }
+
+  void updateVeriableValue(String? name, double? value) {
+    final veriables = formula.formulaType!.veriables!.veriableList; // fixme
+    for (final x in veriables) {
+      emit(
+        BaseState.initial(
+          data: initialData!.copyWith(
+            data: initialModel!.copyWith(
+              formula: initialModel!.formula!.copyWith(
+                formulaType: initialModel!.formula!.formulaType!.copyWith(
+                  veriables: initialModel!.formula!.formulaType!.veriables!
+                      .updateVariableValue(name, value),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -108,7 +194,6 @@ class CalculatePageController extends BaseCubit<
     } on FormulaException catch (e) {
       switch (e) {
         case SomethingMissingException():
-          print('çalıstı');
           emit(
             BaseState.initial(
               data: initialData!.copyWith(
@@ -152,6 +237,19 @@ class CalculatePageController extends BaseCubit<
         data: initialData!.copyWith(
           data: initialModel!.copyWith(
             formulaException: const NoneFormulaException(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void resetGptResponse() {
+    print('resetlendi');
+    emit(
+      BaseState.initial(
+        data: initialData!.copyWith(
+          data: initialModel!.copyWith(
+            gptResponseStatus: const CalculatePageGptResponseNone(),
           ),
         ),
       ),
