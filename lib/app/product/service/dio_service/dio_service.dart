@@ -1,22 +1,16 @@
 import 'dart:io';
 
-import 'package:calculator/app/product/service/model/base_model.dart';
-import 'package:calculator/app/product/service/model/response_model.dart';
-import 'package:calculator/app/product/service/service_settings.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
-final class DioService {
-  DioService({this.header}) {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        headers: header,
-      ),
-    );
-  }
+import '../model/base_model.dart';
+import '../model/response_model.dart';
+import '../service_settings.dart';
 
-  final Map<String, dynamic>? header;
+final class DioService {
+  DioService() {
+    _dio = Dio(BaseOptions(baseUrl: baseUrl));
+  }
 
   final String baseUrl = ServiceSettings.baseUrl;
 
@@ -27,12 +21,10 @@ final class DioService {
     required T model,
     Object? data,
     bool addToken = false,
-    String? token,
+    Map<String, dynamic>? header,
+    Map<String, dynamic>? queryParams,
   }) async {
-    addIntercepter(
-      addToken: addToken,
-      token: token,
-    );
+    addIntercepter(addToken: addToken);
     _dio.httpClientAdapter = IOHttpClientAdapter(
       validateCertificate: (X509Certificate? cert, String host, int port) {
         return true;
@@ -41,20 +33,19 @@ final class DioService {
         return HttpClient()
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) {
-            return true;
-          };
+                return true;
+              };
       },
     );
     try {
       final response = await _dio.get<dynamic>(
         path,
         data: data,
+        options: Options(headers: header),
+        queryParameters: queryParams,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final parseModel = _parseModel<T>(
-          data: response.data,
-          model: model,
-        );
+        final parseModel = _parseModel<T>(data: response.data, model: model);
         return ResponseModel<T>(
           message: response.statusMessage,
           data: parseModel,
@@ -89,16 +80,9 @@ final class DioService {
     required T model,
     Object? data,
     bool addToken = false,
-    String? token,
-    bool addApiKeyHeader = false,
-    String? apiKey,
+    Map<String, dynamic>? header,
   }) async {
-    addIntercepter(
-      addToken: addToken,
-      token: token,
-      addApiKeyHeader: addApiKeyHeader,
-      apiKey: apiKey,
-    );
+    addIntercepter(addToken: addToken);
     _dio.httpClientAdapter = IOHttpClientAdapter(
       validateCertificate: (X509Certificate? cert, String host, int port) {
         return true;
@@ -107,21 +91,19 @@ final class DioService {
         return HttpClient()
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) {
-            return true;
-          };
+                return true;
+              };
       },
     );
     try {
       final response = await _dio.post<dynamic>(
         path,
         data: data,
-
+        options: Options(headers: header),
       );
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final parseModel = _parseModel<T>(
-          data: response.data,
-          model: model,
-        );
+        final parseModel = _parseModel<T>(data: response.data, model: model);
         return ResponseModel<T>(
           message: response.statusMessage,
           data: parseModel,
@@ -134,6 +116,7 @@ final class DioService {
         statusCode: response.statusCode,
       );
     } on DioException catch (e) {
+      print(e);
       return Future.value(
         ResponseModel<T>(
           message: e.response?.statusMessage,
@@ -159,20 +142,14 @@ final class DioService {
         return HttpClient()
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) {
-            return true;
-          };
+                return true;
+              };
       },
     );
     try {
-      final response = await _dio.delete<dynamic>(
-        path,
-        data: data,
-      );
+      final response = await _dio.delete<dynamic>(path, data: data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final parseModel = _parseModel<T>(
-          data: response.data,
-          model: model,
-        );
+        final parseModel = _parseModel<T>(data: response.data, model: model);
         return ResponseModel<T>(
           message: response.statusMessage,
           data: parseModel,
@@ -210,20 +187,14 @@ final class DioService {
         return HttpClient()
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) {
-            return true;
-          };
+                return true;
+              };
       },
     );
     try {
-      final response = await _dio.put<dynamic>(
-        path,
-        data: data,
-      );
+      final response = await _dio.put<dynamic>(path, data: data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final parseModel = _parseModel<T>(
-          data: response.data,
-          model: model,
-        );
+        final parseModel = _parseModel<T>(data: response.data, model: model);
         return ResponseModel<T>(
           message: response.statusMessage,
           data: parseModel,
@@ -246,10 +217,36 @@ final class DioService {
     }
   }
 
-  T? _parseModel<T extends BaseModel<T>>({
-    dynamic data,
-    T? model,
-  }) {
+  Future<File?> download({
+    required String url,
+    required String filePath,
+  }) async {
+    try {
+      final file = File(filePath);
+
+      final response = await _dio.download(
+        url,
+        filePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            print('İndirme %: ${(received / total * 100).toStringAsFixed(0)}');
+          }
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return file;
+      } else {
+        print('İndirme başarısız: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('İndirme hatası: $e');
+      return null;
+    }
+  }
+
+  T? _parseModel<T extends BaseModel<T>>({dynamic data, T? model}) {
     if (model == null || data == null) {
       return null;
     }
@@ -257,13 +254,14 @@ final class DioService {
       return model.fromJson(data as Map<String, dynamic>);
     } else if (data is List) {
       return data
-          .map(
-            (responseData) => model.fromJson(
-              responseData is Map<String, dynamic> ? responseData : {},
-            ),
-          )
-          .cast<T>()
-          .toList() as T;
+              .map(
+                (responseData) => model.fromJson(
+                  responseData is Map<String, dynamic> ? responseData : {},
+                ),
+              )
+              .cast<T>()
+              .toList()
+          as T;
     } else {
       return data.toString() as T;
     }
@@ -275,8 +273,7 @@ final class DioService {
     bool addApiKeyHeader = false,
     String? apiKey,
   }) {
-    //_dio.interceptors.clear();
-
+    // fixme düzenle
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -285,7 +282,7 @@ final class DioService {
           }
 
           if (addApiKeyHeader && apiKey != null && apiKey.isNotEmpty) {
-            options.headers['X-API-KEY'] = apiKey;
+            options.headers['x-api-key'] = apiKey;
           }
 
           return handler.next(options);

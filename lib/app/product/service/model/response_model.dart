@@ -1,5 +1,5 @@
 
-import 'package:calculator/app/product/service/model/base_model.dart';
+import 'base_model.dart';
 
 final class ResponseModel<T extends BaseModel<T>> {
   final String? message;
