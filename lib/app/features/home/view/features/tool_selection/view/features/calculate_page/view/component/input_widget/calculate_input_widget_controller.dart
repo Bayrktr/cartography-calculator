@@ -1,14 +1,13 @@
+import 'package:base_cubit_widget/base_cubit_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
-import 'package:calculator/app/product/state/base/cubit/base_state.dart';
 
-class CalculateInputWidgetController extends BaseCubit<Object, Object, Object, BaseState<Object, Object, Object>> {
+class CalculateInputWidgetController extends BaseCubit<Object, Object, Object> {
   CalculateInputWidgetController() : super(BaseState.initial());
 
   final Map<String, TextEditingController> _controllers = {};
 
   TextEditingController controllerFor(String key) {
-    return _controllers.putIfAbsent(key, () => TextEditingController());
+    return _controllers.putIfAbsent(key, TextEditingController.new);
   }
 
   void updateController(String key, String? value) {

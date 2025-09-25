@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'dart:math';
-
+import 'package:base_cubit_widget/base_cubit_widget.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_repository.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_error_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_gpt_response_status.dart';
@@ -10,16 +9,12 @@ import 'package:calculator/app/features/home/view/features/tool_selection/view/f
 import 'package:calculator/app/product/exception/formula/formula_exception.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
-import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
-import 'package:calculator/app/product/state/base/cubit/base_state.dart';
-import 'package:calculator/app/product/state/base/cubit/model/initial/base_initial_data_model.dart';
 import 'package:dio/dio.dart';
 
 class CalculatePageController extends BaseCubit<
     CalculatePageInitialModel,
     CalculatePageErrorModel,
-    Object,
-    BaseState<CalculatePageInitialModel, CalculatePageErrorModel, Object>> {
+    Object> {
   CalculatePageController({required this.formula}) : super(BaseState.loading());
 
   final FormulaModel formula;

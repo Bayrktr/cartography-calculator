@@ -1,28 +1,27 @@
-
 import 'package:auto_route/annotations.dart';
+import 'package:base_cubit_widget/package/cubit/widget/base_cubit_widget.dart';
 import 'package:calculator/app/core/extention/build_context/build_context_extension.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_controller.dart';
-import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_error_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_gpt_response_status.dart';
-import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_initial_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_show_modal_bottom_sheet_model.dart';
-import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/calculate_exception_alert_dialog.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/exception/gpt_response_exceptions.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/calculate_result_modal_bottom_sheet.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/gpt_response_error_alert_dialog.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/input_widget/calculate_input_widget.dart';
 import 'package:calculator/app/product/component/alert_dialog/custom_alert_dialog.dart';
+import 'package:calculator/app/product/component/loading/general_circular_progress.dart';
 import 'package:calculator/app/product/component/modal_bottom_sheet/custom_modal_bottom_sheet.dart';
 import 'package:calculator/app/product/component/record_button/view/record_button_widget.dart';
+import 'package:calculator/app/product/component/scaffold/general_scaffold.dart';
+import 'package:calculator/app/product/component/snack_bar/general_snack_bar.dart';
 import 'package:calculator/app/product/component/text/locale_text.dart';
-import 'package:calculator/app/product/exception/formula/formula_exception.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
-import 'package:calculator/app/product/state/base/cubit/base_state.dart';
-import 'package:calculator/app/product/state/base/cubit/widget/base_cubit_widget.dart';
 import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'component/calculate_button.dart';
+
 @RoutePage()
 class CalculatePageView extends StatelessWidget {
   CalculatePageView({super.key, this.formula});
@@ -38,8 +37,7 @@ class CalculatePageView extends StatelessWidget {
 
     final textControllers = {
       for (final variable in variables)
-        if (variable != null)
-          variable.veriableName: TextEditingController(),
+        if (variable != null) variable.veriableName: TextEditingController(),
     };
 
     return BlocProvider(
@@ -47,102 +45,86 @@ class CalculatePageView extends StatelessWidget {
       child: BaseCubitWidget(
         bloc: controller,
         blocType: BlocType.both,
-        listener: (context, state) {
-          switch (state) {
-            case BaseInitialModel():
-              final model = state.model;
-              if (model?.modalSheet is CalculatePageResultShowModalBottomSheet) {
-                print('burası1');
-                CustomModalBottomSheet(
-                  backgroundColor: context.theme.bottomNavigationBarTheme.backgroundColor,
-                  context: context,
-                  builder: CalculateResultModalBottomSheet(
-                    veriable: model!.formula!.formulaType!.result,
-                  ),
-                ).show;
-              }
-
-              /*
-
-              if (model?.formulaException is FormulaException) {
-                print('burası2');
-
-                CustomAlertDialog(
-                  context: context,
-                  builder: CalculateExceptionAlertDialog(
-                    formulaException: model!.formulaException,
-                  ).build,
-                ).show;
-              }
-
-               */
-
-              if (model?.gptResponseStatus is CalculatePageGptResponseError) {
-                print('burası3');
-
-                CustomAlertDialog(
-                  context: context,
-                  builder: GptResponseErrorAlertDialog(
-                    exception: (model?.gptResponseStatus as CalculatePageGptResponseError?)?.exception,
-                  ).build,
-                ).show;
-              }
+        initialListener: (context, state) {
+          final data = state.model!;
+          final resultStatus = data.gptResponseStatus;
+          switch (resultStatus) {
+            case CalculatePageGptResponseNone():
+              break;
+            case CalculatePageGptResponseOnProgress():
               break;
 
-            default:
-              break;
+            case CalculatePageGptResponseError():
+              final errorData = resultStatus.exception;
+              switch (errorData) {
+                case null:
+                  break;
+                case GptResponseNoneException():
+                  GeneralSnackBar.show(
+                      context: context,
+                      title: 'Başarısız',
+                      message: '',
+                      type: GeneralSnackBarType.error);
+
+                case GptResponseMissingValueException():
+                  GeneralSnackBar.show(
+                      context: context,
+                      title: 'Başarısız',
+                      message: '',
+                      type: GeneralSnackBarType.error);
+
+                case GptResponseNoneKnownException():
+                  GeneralSnackBar.show(
+                      context: context,
+                      title: 'Başarısız',
+                      message: '',
+                      type: GeneralSnackBarType.error);
+              }
+
+            case CalculatePageGptResponseDone():
+              GeneralSnackBar.show(
+                  context: context,
+                  title: 'Başarılı',
+                  message: '',
+                  type: GeneralSnackBarType.success);
           }
         },
-        initial: (state) {
-          return Scaffold(
+        initialBuilder: (state) {
+          final data = state.model!;
+          final resultStatus = data.gptResponseStatus;
+          return GeneralScaffold(
+            isLoading: resultStatus is CalculatePageGptResponseOnProgress,
             appBar: AppBar(
-              title: Text(formula?.title ?? '', style: context.theme.textTheme.titleLarge),
+              title: Text(
+                formula?.title ?? '',
+                style: context.theme.textTheme.titleLarge,
+              ),
             ),
             floatingActionButton: RecordButtonWidget(
               onResult: controller.getGptResult,
             ),
-            body: Stack(
-              children: [
-                Padding(
-                  padding: context.padding.normal,
-                  child: ListView.builder(
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: variables.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == variables.length) {
-                        return const _CalculateButton();
-                      }
+            body: Padding(
+              padding: context.padding.normal,
+              child: ListView.builder(
+                physics: const ClampingScrollPhysics(),
+                itemCount: variables.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == variables.length) {
+                    return const _CalculateButton();
+                  }
 
-                      final variable = variables[index];
-                      if (variable == null) return const SizedBox.shrink();
+                  final variable = variables[index];
+                  if (variable == null) return const SizedBox.shrink();
 
-                      return CalculateInputWidget(
-                        veriable: variable,
-                        controller: textControllers[variable.veriableName]!,
-                      );
-                    },
-                  ),
-                ),
-                if (state.model?.gptResponseStatus is CalculatePageGptResponseOnProgress)
-                  const _LoadingOverlay(),
-              ],
+                  return CalculateInputWidget(
+                    veriable: variable,
+                    controller: textControllers[variable.veriableName]!,
+                  );
+                },
+              ),
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _LoadingOverlay extends StatelessWidget {
-  const _LoadingOverlay();
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: ColoredBox(
-        color: Colors.black.withOpacity(0.4),
-        child: const Center(child: CircularProgressIndicator()),
       ),
     );
   }

@@ -20,6 +20,7 @@ class CalculatePageGptResponseError extends CalculatePageGptResponseStatus {
   });
 
   final GptResponseExceptions? exception;
+
 }
 
 class CalculatePageGptResponseDone extends CalculatePageGptResponseStatus {

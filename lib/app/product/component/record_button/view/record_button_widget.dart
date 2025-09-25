@@ -1,7 +1,6 @@
 import 'dart:io';
-
+import 'package:base_cubit_widget/base_cubit_widget.dart';
 import 'package:calculator/app/product/component/record_button/controller/record_button_controller.dart';
-import 'package:calculator/app/product/state/base/cubit/widget/base_cubit_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,7 +22,7 @@ class RecordButtonWidget extends StatelessWidget {
       create: (_) => controller,
       child: BaseCubitWidget(
         bloc: controller,
-        initial: (state) {
+        initialBuilder: (state) {
           final isListening = state.model?.isListening ?? false;
           return FloatingActionButton(
             onPressed: () {

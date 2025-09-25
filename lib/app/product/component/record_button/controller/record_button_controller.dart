@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
-
+import 'package:base_cubit_widget/base_cubit_widget.dart';
 import 'package:calculator/app/product/component/record_button/model/record_button_initial_model.dart';
-import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
-import 'package:calculator/app/product/state/base/cubit/base_state.dart';
-import 'package:calculator/app/product/state/base/cubit/model/initial/base_initial_data_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 
 class RecordButtonController extends BaseCubit<RecordButtonInitialModel, Object,
-    Object, BaseState<RecordButtonInitialModel, Object, Object>> {
+    Object> {
   RecordButtonController(
     this.onResult,
   ) : super(

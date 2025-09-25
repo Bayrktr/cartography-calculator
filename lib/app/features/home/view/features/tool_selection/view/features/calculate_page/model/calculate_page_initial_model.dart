@@ -10,7 +10,6 @@ class CalculatePageInitialModel with EquatableMixin {
   CalculatePageInitialModel({
     this.response,
     this.formula,
-    this.modalSheet = const CalculatePageNoneShowModalBottomSheet(),
     this.formulaException = const NoneFormulaException(),
     this.voiceMessage = '',
     this.gptResponseStatus = const CalculatePageGptResponseNone(),
@@ -18,7 +17,6 @@ class CalculatePageInitialModel with EquatableMixin {
 
   final FormulaResponseModel? response;
   final FormulaModel? formula;
-  final CalculatePageShowModalBottomSheetModel modalSheet;
   final FormulaException formulaException;
   final String voiceMessage;
   final CalculatePageGptResponseStatus gptResponseStatus;
@@ -27,7 +25,6 @@ class CalculatePageInitialModel with EquatableMixin {
   List<Object?> get props => [
         response,
         formula,
-        modalSheet,
         formulaException,
         voiceMessage,
         gptResponseStatus,
@@ -36,7 +33,6 @@ class CalculatePageInitialModel with EquatableMixin {
   CalculatePageInitialModel copyWith({
     FormulaResponseModel? response,
     FormulaModel? formula,
-    CalculatePageShowModalBottomSheetModel? modalSheet,
     FormulaException? formulaException,
     String? voiceMessage,
     CalculatePageGptResponseStatus? gptResponseStatus,
@@ -44,7 +40,6 @@ class CalculatePageInitialModel with EquatableMixin {
       CalculatePageInitialModel(
         response: response ?? this.response,
         formula: formula ?? this.formula,
-        modalSheet: modalSheet ?? this.modalSheet,
         formulaException: formulaException ?? this.formulaException,
         voiceMessage: voiceMessage ?? this.voiceMessage,
         gptResponseStatus: gptResponseStatus ?? this.gptResponseStatus,

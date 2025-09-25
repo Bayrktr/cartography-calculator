@@ -1,11 +1,8 @@
+import 'package:base_cubit_widget/base_cubit_widget.dart';
 import 'package:calculator/app/features/splash/model/splash_model.dart';
 import 'package:calculator/app/features/splash/model/splash_navigate_model.dart';
-import 'package:calculator/app/product/state/base/cubit/base_cubit.dart';
-import 'package:calculator/app/product/state/base/cubit/base_state.dart';
-import 'package:calculator/app/product/state/base/cubit/model/initial/base_initial_data_model.dart';
 
-class SplashController extends BaseCubit<SplashModel, Object, Object,
-    BaseState<SplashModel, Object, Object>> {
+class SplashController extends BaseCubit<SplashModel, Object, Object> {
   SplashController()
       : super(
           BaseState.loading(),
