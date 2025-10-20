@@ -1,23 +1,54 @@
-import 'package:base_cubit_widget/base_cubit_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
 
-class CalculateInputWidgetController extends BaseCubit<Object, Object, Object> {
-  CalculateInputWidgetController() : super(BaseState.initial());
+class CalculateInputWidgetController<T extends VeriableTypes<dynamic>>
+    extends ChangeNotifier {
+  CalculateInputWidgetController(T initialValue)
+      : _veriable = initialValue,
+        textController = TextEditingController(
+          text: _formatValue(initialValue.value),
+        );
 
-  final Map<String, TextEditingController> _controllers = {};
+  final TextEditingController textController;
 
-  TextEditingController controllerFor(String key) {
-    return _controllers.putIfAbsent(key, TextEditingController.new);
+  T _veriable;
+  T get veriable => _veriable;
+
+  /// TextField değiştiğinde çağrılır, input her zaman double olarak parse edilir
+  void setFromText(String text) {
+    if (text.isEmpty) return;
+
+    final parsed = double.tryParse(text);
+    if (parsed == null) return;
+
+    _veriable = _veriable.copyWith(value: parsed) as T;
+
+    // Gereksiz ".0" olmadan TextField güncelle
+    textController.text = _formatValue(_veriable.value);
+
+    notifyListeners();
   }
 
-  void updateController(String key, String? value) {
-    if (value == null) return;
-    final controller = controllerFor(key);
-    if (controller.text != value) {
-      controller.text = value;
+  /// Controller üzerinden value güncellemek için
+  void setValue(double newValue) {
+    _veriable = _veriable.copyWith(value: newValue) as T;
+    textController.text = _formatValue(newValue);
+    notifyListeners();
+  }
+
+  /// Double değerleri ".0" olmadan string yapar
+  static String _formatValue(dynamic value) {
+    if (value == null) return '';
+    if (value is double) {
+      if (value == value.toInt()) return value.toInt().toString();
+      return value.toString();
     }
+    return value.toString();
   }
 
   @override
-  Future<void> onInit() async {}
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
 }

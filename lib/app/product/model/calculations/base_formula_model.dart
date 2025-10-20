@@ -8,49 +8,51 @@ import 'package:calculator/app/product/model/calculations/veriable/veriable_type
 import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:equatable/equatable.dart';
 
-sealed class BaseFormulaModel {
-  void calculate();
+sealed class BaseFormulaModel<T extends VeriableTypes<dynamic>> {
+  T calculate(Map<String, VeriableTypes<dynamic>> veriables);
 
   BaseVeriablesModel? veriables;
 
   BaseFormulaModel copyWith({BaseVeriablesModel? veriables});
-
-  VeriableTypes<dynamic> get result;
 }
 
-class DeflectionFormula extends BaseFormulaModel with EquatableMixin {
+class DeflectionFormula extends BaseFormulaModel<DegreeVeriable>
+    with EquatableMixin {
   DeflectionFormula({
     this.veriables,
   });
 
   final DeflectionVeriablesModel? veriables;
 
-  DegreeVeriable _result = DegreeVeriable(
-    veriableName: 'x',
-    title: LocaleKeys.deflection_xTitle.lang.tr,
-  );
+  DegreeVeriable get _result => DegreeVeriable(
+        veriableName: 'x',
+        title: LocaleKeys.deflection_xTitle.lang.tr,
+      );
 
   @override
-  DegreeVeriable get result => _result;
+  DegreeVeriable calculate(
+      Map<String, VeriableTypes<dynamic>> updatedVeriables) {
+    final missing = <String>[];
 
-  @override
-  void calculate() {
-    final missing = <VeriableTypes<dynamic>?>[];
+    final tVar = updatedVeriables[veriables?.T?.veriableName];
+    final fVar = updatedVeriables[veriables?.F?.veriableName];
+    final aVar = updatedVeriables[veriables?.A?.veriableName];
+    final bVar = updatedVeriables[veriables?.b?.veriableName];
 
-    for (final VeriableTypes<dynamic>? x in veriables?.veriableList ?? []) {
-      if (x?.value == null) {
-        missing.add(x);
-      }
-    }
+    if (tVar?.value == null) missing.add('T');
+    if (fVar?.value == null) missing.add('F');
+    if (aVar?.value == null) missing.add('A');
+    if (bVar?.value == null) missing.add('b');
 
     if (missing.isNotEmpty) {
-      throw SomethingMissingException(missingValues: missing);
+      throw SomethingMissingException(
+          missingValues: missing.map((e) => updatedVeriables[e]).toList());
     }
 
-    final TValue = veriables!.T!.value!.toInt();
-    final FValue = veriables!.F!.value!.toInt();
-    final AValue = veriables!.A!.value!.toInt();
-    final bValue = veriables!.b!.value!.toInt();
+    final TValue = _toInt(tVar!.value);
+    final FValue = _toInt(fVar!.value);
+    final AValue = _toInt(aVar!.value);
+    final bValue = _toInt(bVar!.value);
 
     final sqrtT = sqrt(TValue);
     final sqrtF = sqrt(FValue);
@@ -60,8 +62,19 @@ class DeflectionFormula extends BaseFormulaModel with EquatableMixin {
     final total = (innerFraction / AValue) + tanPart;
     final alfa = atan(total) * 180 / pi + 100;
 
-    _result = _result.copyWith(value: alfa);
+    return _result.copyWith(value: alfa);
   }
+
+  int _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed.toInt();
+    }
+    throw Exception('Değer int veya double olmalı, gelen: $value');
+  }
+
 
   @override
   List<Object?> get props => [veriables];

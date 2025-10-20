@@ -4,12 +4,14 @@ import 'package:calculator/app/core/extention/string/string_extention.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/controller/calculate_page_controller.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_gpt_response_status.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_initial_model.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/view/component/input_widget/calculate_input_widget_controller.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
 import 'package:calculator/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part '../distance_text_field.dart';
+
 part '../degree_text_field.dart';
 
 class CalculateInputWidget extends StatelessWidget {
@@ -17,10 +19,12 @@ class CalculateInputWidget extends StatelessWidget {
     super.key,
     required this.veriable,
     required this.controller,
+    this.onChanged,
   });
 
   final VeriableTypes<dynamic> veriable;
-  final TextEditingController controller;
+  final CalculateInputWidgetController controller;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +33,7 @@ class CalculateInputWidget extends StatelessWidget {
       listener: (context, state) {
         switch (state) {
           case BaseInitialModel<CalculatePageInitialModel, Object, Object>():
-            final status = state.model?.gptResponseStatus;
+            final status = state.model!.gptResponseStatus;
 
             switch (status) {
               case CalculatePageGptResponseDone():
@@ -37,19 +41,12 @@ class CalculateInputWidget extends StatelessWidget {
                 final matchedValue = variables?[veriable.veriableName];
 
                 if (matchedValue != null) {
-                  context.read<CalculatePageController>().updateVeriableValue(
-                        veriable.veriableName,
-                        matchedValue,
-                      );
-                  controller.text = matchedValue.toString();
+                  _setController(matchedValue);
                 }
-                break;
 
               case CalculatePageGptResponseError():
               case CalculatePageGptResponseOnProgress():
               case CalculatePageGptResponseNone():
-              case null:
-                break;
             }
 
           case BaseLoadingModel<CalculatePageInitialModel, Object, Object>():
@@ -66,13 +63,21 @@ class CalculateInputWidget extends StatelessWidget {
         return _DistanceTextField(
           veriable: veriable,
           controller: controller,
+          onChanged: onChanged,
         );
 
       case DegreeVeriable():
         return _DegreeTextField(
           veriable: veriable,
           controller: controller,
+          onChanged: onChanged,
         );
     }
+  }
+
+  void _setController(double? value) {
+    controller.setFromText(
+      value.toString(),
+    );
   }
 }

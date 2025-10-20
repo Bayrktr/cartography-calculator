@@ -40,7 +40,7 @@ class AppRouter extends RootStackRouter {
                   path: RoutePath.allTools.getPath,
                   initial: true,
                 ),
-                AdaptiveRoute<AllToolsRoute>(
+                AdaptiveRoute<CalculatePageRoute>(
                   page: CalculatePageRoute.page,
                   path: RoutePath.calculatePage.getPath,
                 ),

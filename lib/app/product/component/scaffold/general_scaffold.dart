@@ -38,7 +38,10 @@ class GeneralScaffold extends StatelessWidget {
                   ? SafeArea(child: body ?? const SizedBox.shrink())
                   : body,
             ),
-        (isLoading) ? GeneralCircularProgress() : const SizedBox.shrink(),
+        if (isLoading)
+          const GeneralCircularProgress()
+        else
+          const SizedBox.shrink(),
       ],
     );
   }

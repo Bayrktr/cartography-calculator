@@ -1,7 +1,7 @@
 import 'package:calculator/app/product/model/calculations/base_formula_model.dart';
 import 'package:equatable/equatable.dart';
 
-class FormulaModel with EquatableMixin {
+class FormulaModel<T extends BaseFormulaModel> with EquatableMixin {
   FormulaModel({
     required this.title,
     this.message,
@@ -11,7 +11,7 @@ class FormulaModel with EquatableMixin {
 
   final String title;
   final String? message;
-  final BaseFormulaModel? formulaType;
+  final T? formulaType;
   final String? gptEndpoint;
 
   @override
@@ -25,7 +25,7 @@ class FormulaModel with EquatableMixin {
   FormulaModel copyWith({
     String? title,
     String? message,
-    BaseFormulaModel? formulaType,
+    T? formulaType,
     String? gptEndpoint,
   }) =>
       FormulaModel(

@@ -4,39 +4,36 @@ import 'package:calculator/app/features/home/view/features/tool_selection/view/f
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_error_model.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_gpt_response_status.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_initial_model.dart';
-import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_page_show_modal_bottom_sheet_model.dart';
+import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/calculate_result_status.dart';
 import 'package:calculator/app/features/home/view/features/tool_selection/view/features/calculate_page/model/exception/gpt_response_exceptions.dart';
 import 'package:calculator/app/product/exception/formula/formula_exception.dart';
+import 'package:calculator/app/product/model/calculations/base_formula_model.dart';
 import 'package:calculator/app/product/model/calculations/formula_model.dart';
 import 'package:calculator/app/product/model/calculations/veriable/veriable_types.dart';
 import 'package:dio/dio.dart';
 
-class CalculatePageController extends BaseCubit<
-    CalculatePageInitialModel,
-    CalculatePageErrorModel,
-    Object> {
+class CalculatePageController<
+        T extends BaseFormulaModel<VeriableTypes<dynamic>>>
+    extends BaseCubit<CalculatePageInitialModel, CalculatePageErrorModel,
+        Object> {
   CalculatePageController({required this.formula}) : super(BaseState.loading());
 
-  final FormulaModel formula;
+  final FormulaModel<T> formula;
 
   final CalculatePageRepository _repository = CalculatePageRepository();
 
   @override
   Future<void> onInit() async {
-    emit(
-      BaseState.initial(
-        data: BaseInitialDataModel<CalculatePageInitialModel>(
-          data: CalculatePageInitialModel(
-            formula: formula,
-          ),
-        ),
+    emit(BaseState.initial(
+      data: BaseInitialDataModel<CalculatePageInitialModel>(
+        data: CalculatePageInitialModel(),
       ),
-    );
+    ));
   }
 
   Future<void> getGptResult(File? voiceMessage) async {
     try {
-      final formulaType = initialData?.data?.formula?.formulaType;
+      final formulaType = formula.formulaType;
 
       if (formulaType == null || voiceMessage == null) {
         throw Exception();
@@ -51,13 +48,9 @@ class CalculatePageController extends BaseCubit<
         },
       );
 
-      emit(
-        BaseState.initial(
-          data: initialData!.copyWith(
-            data: initialModel!.copyWith(
-              gptResponseStatus: const CalculatePageGptResponseOnProgress(),
-            ),
-          ),
+      emitInitial(
+        initialModel!.copyWith(
+          gptResponseStatus: const CalculatePageGptResponseOnProgress(),
         ),
       );
 
@@ -71,46 +64,25 @@ class CalculatePageController extends BaseCubit<
       resetGptResponse();
 
       if (status != 200) {
-        emit(
-          BaseState.initial(
-            data: initialData!.copyWith(
-              data: initialModel!.copyWith(
-                gptResponseStatus: CalculatePageGptResponseError(
-                  exception: GptResponseExceptions.fromType(
-                    status,
-                    response.data?.errors ?? [],
-                    response.data?.message,
-                  ),
-                ),
+        emitInitial(
+          initialModel!.copyWith(
+            gptResponseStatus: CalculatePageGptResponseError(
+              exception: GptResponseExceptions.fromType(
+                status,
+                response.data?.errors ?? [],
+                response.data?.message,
               ),
             ),
           ),
         );
       } else {
-        print('veriables');
-        print(response.data!.variables);
-        emit(
-          BaseState.initial(
-            data: initialData!.copyWith(
-              data: initialModel!.copyWith(
-                response: response.data,
-                gptResponseStatus: CalculatePageGptResponseDone(
-                  response: response.data,
-                ),
-              ),
+        emitInitial(
+          initialModel!.copyWith(
+            gptResponseStatus: CalculatePageGptResponseDone(
+              response: response.data,
             ),
           ),
         );
-        emit(
-          BaseState.initial(
-            data: initialData!.copyWith(
-              data: initialModel!.copyWith(
-                modalSheet: const CalculatePageResultShowModalBottomSheet(),
-              ),
-            ),
-          ),
-        );
-        resetModalSheet();
       }
       resetGptResponse();
     } on FormulaException catch (e) {
@@ -120,133 +92,53 @@ class CalculatePageController extends BaseCubit<
         case NoneKnownFormulaException():
       }
     } catch (e) {}
-    resetModalSheet();
   }
 
-  void updateVeriable(VeriableTypes<dynamic> veriable) {
-    final veriables = formula.formulaType!.veriables!.veriableList; // fixme
-    for (final x in veriables) {
-      if (x!.veriableName == veriable.veriableName) {
-        print('veriable guncelleniyo');
-
-        emit(
-          BaseState.initial(
-            data: initialData!.copyWith(
-              data: initialModel!.copyWith(
-                formula: initialModel!.formula!.copyWith(
-                  formulaType: initialModel!.formula!.formulaType!.copyWith(
-                    veriables: initialModel!.formula!.formulaType!.veriables!
-                        .updateVeriable(
-                      veriable,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-        for(var x in initialModel!.formula!.formulaType!.veriables!.veriableList){
-          print(x!.value);
-        }
-      }
-    }
-  }
-
-  void updateVeriableValue(String? name, double? value) {
-    final veriables = formula.formulaType!.veriables!.veriableList; // fixme
-    for (final x in veriables) {
-      emit(
-        BaseState.initial(
-          data: initialData!.copyWith(
-            data: initialModel!.copyWith(
-              formula: initialModel!.formula!.copyWith(
-                formulaType: initialModel!.formula!.formulaType!.copyWith(
-                  veriables: initialModel!.formula!.formulaType!.veriables!
-                      .updateVariableValue(name, value),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  void updateResult() {
+  void updateResult(
+    Map<String, VeriableTypes<dynamic>> updatedVeriables,
+  ) {
     try {
-      initialModel!.formula!.formulaType!.calculate();
-
-      emit(
-        BaseState.initial(
-          data: initialData!.copyWith(
-            data: initialModel!.copyWith(
-              modalSheet: const CalculatePageResultShowModalBottomSheet(),
-            ),
+      final value = formula.formulaType!.calculate(
+        updatedVeriables,
+      );
+      emitInitial(
+        initialModel!.copyWith(
+          calculateResultStatus: CalculateResultDone<VeriableTypes<dynamic>>(
+            value: value,
           ),
         ),
       );
-      resetModalSheet();
     } on FormulaException catch (e) {
+      print('hata yakalandı: $e');
       switch (e) {
         case SomethingMissingException():
-          emit(
-            BaseState.initial(
-              data: initialData!.copyWith(
-                data: initialModel!.copyWith(
-                  formulaException: e,
-                ),
+          print(e.missingValues);
+          emitInitial(
+            initialModel!.copyWith(
+              calculateResultStatus: CalculateResultError(
+                exception: e,
               ),
             ),
           );
         case NoneFormulaException():
         case NoneKnownFormulaException():
-          emit(
-            BaseState.initial(
-              data: initialData!.copyWith(
-                data: initialModel!.copyWith(
-                  formulaException: e,
-                ),
+          emitInitial(
+            initialModel!.copyWith(
+              calculateResultStatus: CalculateResultError(
+                exception: e,
               ),
             ),
           );
       }
-    } catch (e) {}
-    resetFormulaException();
-  }
-
-  void resetModalSheet() {
-    emit(
-      BaseState.initial(
-        data: initialData!.copyWith(
-          data: initialModel!.copyWith(
-            modalSheet: const CalculatePageNoneShowModalBottomSheet(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void resetFormulaException() {
-    emit(
-      BaseState.initial(
-        data: initialData!.copyWith(
-          data: initialModel!.copyWith(
-            formulaException: const NoneFormulaException(),
-          ),
-        ),
-      ),
-    );
+    } catch (e) {
+      print(e);
+    }
   }
 
   void resetGptResponse() {
-    print('resetlendi');
-    emit(
-      BaseState.initial(
-        data: initialData!.copyWith(
-          data: initialModel!.copyWith(
-            gptResponseStatus: const CalculatePageGptResponseNone(),
-          ),
-        ),
+    emitInitial(
+      initialModel!.copyWith(
+        gptResponseStatus: const CalculatePageGptResponseNone(),
       ),
     );
   }
